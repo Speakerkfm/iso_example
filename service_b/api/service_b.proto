@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "service_b/p/service_b";
+option go_package = "github.com/Speakerkfm/test_svc/service_b/api/service_b";
 
 service UserService {
     rpc GetUser (GetUserRequest) returns (GetUserResponse);

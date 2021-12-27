@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "service_c/adapters/service_b";
+option go_package = "github.com/Speakerkfm/test_svc/service_c/api/service_c";
 
 service PhoneService {
   rpc CheckPhone(CheckPhoneRequest) returns (CheckPhoneResponse);
