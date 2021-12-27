@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-option go_package = "serviceA/adapters/service_b";
+option go_package = "service_c/adapters/service_b";
 
-service ServiceC {
+service PhoneService {
   rpc CheckPhone(CheckPhoneRequest) returns (CheckPhoneResponse);
 }
 
