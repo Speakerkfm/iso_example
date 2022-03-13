@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package = "github.com/Speakerkfm/iso_example/address-api/api/address_api";
+
+service AddressService {
+  rpc GetUserAddress (GetUserAddressRequest) returns (GetUserAddressResponse);
+}
+
+message GetUserAddressRequest {
+  int64 user_id = 1;
+}
+
+message GetUserAddressResponse {
+  Address address = 1;
+}
+
+message Address {
+  int64 id = 1;
+  string city = 2;
+  string zip_code = 3;
+}
