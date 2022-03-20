@@ -25,7 +25,7 @@ func (s *server) GetUser(ctx context.Context, req *user_api.GetUserRequest) (*us
 }
 
 func main() {
-	lis, err := net.Listen("tcp", "localhost:8002")
+	lis, err := net.Listen("tcp", "localhost:8001")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

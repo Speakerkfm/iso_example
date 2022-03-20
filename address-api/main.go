@@ -25,7 +25,7 @@ func (s *server) GetUserAddress(ctx context.Context, req *address_api.GetUserAdd
 }
 
 func main() {
-	lis, err := net.Listen("tcp", "localhost:8003")
+	lis, err := net.Listen("tcp", "localhost:8002")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
