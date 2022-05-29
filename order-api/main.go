@@ -13,6 +13,8 @@ import (
 	address_api "github.com/Speakerkfm/iso_example/address-api/api"
 	shipment_api "github.com/Speakerkfm/iso_example/shipment-api/api"
 	user_api "github.com/Speakerkfm/iso_example/user-api/api"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 )
 
@@ -24,27 +26,37 @@ const (
 
 func main() {
 	rand.Seed(time.Now().Unix())
-	userApiConn, err := grpc.Dial(userApiHost, grpc.WithInsecure())
+	grpc_prometheus.EnableClientHandlingTimeHistogram()
+
+	userApiConn, err := grpc.Dial(userApiHost,
+		grpc.WithInsecure(),
+		grpc.WithUnaryInterceptor(grpc_prometheus.UnaryClientInterceptor),
+	)
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer userApiConn.Close()
 	userApiClient := user_api.NewUserServiceClient(userApiConn)
 
-	addressApiConn, err := grpc.Dial(addressApiHost, grpc.WithInsecure())
+	addressApiConn, err := grpc.Dial(addressApiHost, grpc.WithInsecure(),
+		grpc.WithUnaryInterceptor(grpc_prometheus.UnaryClientInterceptor),
+	)
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer addressApiConn.Close()
 	addressApiClient := address_api.NewAddressServiceClient(addressApiConn)
 
-	shipmentApiConn, err := grpc.Dial(shipmentApiHost, grpc.WithInsecure())
+	shipmentApiConn, err := grpc.Dial(shipmentApiHost, grpc.WithInsecure(),
+		grpc.WithUnaryInterceptor(grpc_prometheus.UnaryClientInterceptor),
+	)
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer shipmentApiConn.Close()
 	shipmentApiClient := shipment_api.NewShipmentServiceClient(shipmentApiConn)
 
+	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/CreateOrder", func(writer http.ResponseWriter, request *http.Request) {
 		queryUserID := request.URL.Query().Get("user_id")
 		userID, err := strconv.Atoi(queryUserID)
@@ -64,7 +76,7 @@ func main() {
 
 		addressApiResp, err := addressApiClient.GetUserAddress(ctx, &address_api.GetUserAddressRequest{UserId: int64(userID)})
 		if err != nil {
-			handleError(writer,  fmt.Errorf("address-api: %w", err))
+			handleError(writer, fmt.Errorf("address-api: %w", err))
 			return
 		}
 
@@ -75,7 +87,7 @@ func main() {
 			UserAddressId: addressApiResp.GetAddress().GetId(),
 		})
 		if err != nil {
-			handleError(writer,  fmt.Errorf("shippment-api: %w", err))
+			handleError(writer, fmt.Errorf("shippment-api: %w", err))
 			return
 		}
 
